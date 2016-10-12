@@ -7,7 +7,6 @@ app = Flask(__name__)
 #----------------------------------
 #Blog routes go here
 #----------------------------------
-
 @app.route('/')
 def main():
     return "Main Blog"
@@ -19,28 +18,27 @@ def proj_blog(proj, page_number):
 #----------------------------------
 #Post manipulation routes go here
 #----------------------------------
-
 @app.route('/createpost')
 def createPost():
     return "Page to create a post"
-
-@app.route('/addpost', methods = ['POST'])
-def addPost():
-    return "Puts post in database"
 
 @app.route('/editpost')
 def editPost():
     return "Page to edit a post"
 
+@app.route('/addpost', methods = ['POST'])
+def addPost():
+    return "Puts post in database"
+
 #----------------------------------
 #User manipulation routes go here
 #----------------------------------
 @app.route('/login')
-def logIn():
+def signIn():
     return "Page to log into blog"
 
-@app.route('/adduser')
-def addUser():
+@app.route('/signup')
+def signUp():
     return "Page to add user to blog"
 
 @app.route('/validateuser', methods = ['POST'])
