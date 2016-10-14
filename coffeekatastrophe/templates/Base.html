@@ -7,15 +7,17 @@
 <body>
   {% block body %}
 
-    {% block menu %}
-    {% endblock %}
+    {% include 'Account.html' %}
 
-    {% block admin %}
-    {% endblock %}
+    {% include 'NavMenu.html' %}
+
+    {% if admin %}
+      {% include 'AdminMenu.html' %}
+    {% endif %}
 
     {% block blog %}
     {% endblock %}
-    
+
   {% endblock %}
 </body>
 </html>

@@ -1,0 +1,18 @@
+{% extends "Base.html" %}
+
+{% block title %}Blog{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block blog %}
+  <h1> Blog here </h1>
+{% endblock %}
+
+{% block body %}
+  {{ super() }}
+  <form action="/" method="post">
+    <button type="submit">Login Admin</button>
+  </form>
+{% endblock %}
