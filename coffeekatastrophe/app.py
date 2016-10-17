@@ -27,6 +27,7 @@ def getBlogs(proj, page_number):
 #store user data after validation
 def storeUserData(data):
     userdata = dict()
+    userdata['userkey'] = data[0][0]
     userdata['firstlastname'] = data[0][1]
     userdata['username'] = data[0][2]
     userdata['emailaddres'] = data[0][3]
@@ -105,7 +106,21 @@ def editPost():
 
 @app.route('/addpost', methods = ['POST'])
 def addPost():
-    return "Puts post in database"
+    if isSignedOut():
+        return redirect("/")
+    else:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+
+        val_postTitle = request.form['postTitle']
+        val_postContent = request.form['postContent']
+
+        cursor.callproc('sp_createPost',(val_postTitle, val_postContent, session['userdata']['userkey'],))
+        data = cursor.fetchall()
+        print(data)
+        if len(data) is 0:
+            conn.commit()
+        return redirect("/")
 
 #----------------------------------
 #User manipulation routes go here
