@@ -1,13 +1,19 @@
-{% extends Base.html %}
+{% extends "Base.html" %}
 
-{% block title %}Post{% endblock %}
+{% block title %}Blog{% endblock %}
 
 {% block head %}
   {{ super() }}
 {% endblock %}
 
 {% block blog %}
-  <h1>Posts Here</h1>
+  <h2> Kat's {{ proj|capitalize }} Project</h2>
+  <tr>
+    {% for post in posts %}
+      <td><h3>{{ post[1] }}</h3></td>
+      <td>{{ post[2] }}</td>
+    {% endfor %}
+  </tr>
 {% endblock %}
 
 {% block body %}

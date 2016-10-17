@@ -7,7 +7,13 @@
 {% endblock %}
 
 {% block blog %}
-  <h1> Blog here </h1>
+  <h2> Kat's Blog</h2>
+  <tr>
+    {% for post in posts %}
+      <td><h3>{{ post[1] }}</h3></td>
+      <td>{{ post[2] }}</td>
+    {% endfor %}
+  </tr>
 {% endblock %}
 
 {% block body %}

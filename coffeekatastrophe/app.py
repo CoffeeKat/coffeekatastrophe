@@ -59,7 +59,12 @@ def isSignedOut():
 ################################################################
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    return render_template('Blog.html', userdata = session.get('userdata'))
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.callproc('sp_getposts',('%',0, 10,))
+    data = cursor.fetchall()
+    print(data)
+    return render_template('Blog.html', userdata = session.get('userdata'), posts = data)
 
 ################################################################
 # proj_blog
@@ -73,9 +78,17 @@ def main():
 # This will be achieved by setting the "proj" variable to
 # "all."
 ################################################################
+@app.route('/proj/<proj>')
+@app.route('/proj/<proj>/')
 @app.route('/proj/<proj>/<int:page_number>')
-def proj_blog(proj, page_number):
-    return "Project Blog: %s, Page: %s" % (proj, page_number)
+def proj_blog(proj, page_number = 0):
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.callproc('sp_getposts',(proj,0, 10,))
+        data = cursor.fetchall()
+        print(data)
+        return render_template('Post.html', userdata = session.get('userdata'), posts = data, proj = proj)
+
 
 ################################################################
 # displayPost
