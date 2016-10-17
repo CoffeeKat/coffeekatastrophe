@@ -1,5 +1,15 @@
 <div class="acct-box" id="account_display">
-  <form action="/signin">
-    <input type="submit" value="Login"/>
-  </form>
+  {% if userdata %}
+    <h4>{{userdata.username}}</h4>
+    <form action="/signout">
+      <input type="submit" value="Logout"/>
+    </form>
+  {% else %}
+    <form action="/signin">
+      <input type="submit" value="Sign In"/>
+    </form>
+    <form action="/signup">
+      <input type="submit" value="Sign Up"/>
+    </form>
+  {% endif %}
 </div>

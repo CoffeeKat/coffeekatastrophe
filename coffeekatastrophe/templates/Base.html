@@ -7,11 +7,13 @@
 <body>
   {% block body %}
 
+    {% include 'header.html' %}
+
     {% include 'Account.html' %}
 
     {% include 'NavMenu.html' %}
 
-    {% if admin %}
+    {% if userdata['isadmin'] %}
       {% include 'AdminMenu.html' %}
     {% endif %}
 

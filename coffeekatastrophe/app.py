@@ -19,10 +19,27 @@ hashing.init_app(app)
 
 
 #----------------------------------
-#Helper Functions go here
+#Helper stuff go here
 #----------------------------------
 def getBlogs(proj, page_number):
     return
+
+#store user data after validation
+def storeUserData(data):
+    userdata = dict()
+    userdata['firstlastname'] = data[0][1]
+    userdata['username'] = data[0][2]
+    userdata['emailaddres'] = data[0][3]
+    if request.form['inputUsername'] == os.environ['BLOG_ADMIN_USERNAME']:
+        userdata['isadmin'] = "Admin"
+    else:
+        userdata['isadmin'] = None
+    return userdata
+
+#determines, based on userdata, whether the user is signed in
+def isSignedIn():
+    return 'userdata' not in session or session.get('userdata') == None
+
 
 #----------------------------------
 #Blog routes go here
@@ -41,7 +58,7 @@ def getBlogs(proj, page_number):
 ################################################################
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    return render_template('Blog.html', admin = session.get('admin'))
+    return render_template('Blog.html', userdata = session.get('userdata'))
 
 ################################################################
 # proj_blog
@@ -92,45 +109,55 @@ def addPost():
 #----------------------------------
 @app.route('/signin')
 def signIn():
-    return render_template('SignIn.html', admin = session.get('admin'))
+    if isSignedIn():
+        return render_template('SignIn.html', userdata = None)
+    else:
+        return redirect("/")
+
+@app.route('/signout')
+def signOut():
+    if isSignedIn():
+        return redirect("/")
+    else:
+        session['userdata'] = None
+        return redirect("/")
 
 @app.route('/signup')
 def signUp():
-    return render_template('SignUp.html', admin = session.get('admin'))
+    if isSignedIn():
+        return render_template('SignUp.html', userdata = None)
+    else:
+        return redirect("/")
 
 @app.route('/validateuser', methods = ['POST'])
 def validateUser():
-    global admin_val
     conn = mysql.connect()
     cursor = conn.cursor()
     cursor.callproc('sp_validateLogin', (request.form['inputUsername'],))
     data = cursor.fetchall()
 
     if hashing.check_value(str(data[0][4]), request.form['inputPassword'], salt=os.environ['HASH_SALT']):
-
-        if request.form['inputUsername'] == os.environ['BLOG_ADMIN_USERNAME']:
-            session['admin'] = "Admin"
-        else:
-            session['admin'] = None
-
+        session['userdata'] = storeUserData(data)
     return redirect("/")
 
 @app.route('/createuser', methods = ['POST'])
 def createUser():
     conn = mysql.connect()
     cursor = conn.cursor()
-    if request.method == 'POST':
+    
+    val_name = request.form['inputName']
+    val_username = request.form['inputUsername']
+    val_email = request.form['inputEmail']
+    val_hash = hashing.hash_value(request.form['inputPassword'], salt=os.environ['HASH_SALT'])
 
-        val_name = request.form['inputName']
-        val_username = request.form['inputUsername']
-        val_email = request.form['inputEmail']
-        val_hash = hashing.hash_value(request.form['inputPassword'], salt=os.environ['HASH_SALT'])
-
-        cursor.callproc('sp_createUser',(val_name, val_username, val_email, val_hash))
+    cursor.callproc('sp_createUser',(val_name, val_username, val_email, val_hash))
+    data = cursor.fetchall()
+    print(data)
+    if len(data) is 0:
+        conn.commit()
+        cursor.callproc('sp_validateLogin', (request.form['inputUsername'],))
         data = cursor.fetchall()
-        print(data)
-        if len(data) is 0:
-            conn.commit()
+        session['userdata'] = storeUserData(data)
     return redirect("/")
 
 
