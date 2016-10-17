@@ -37,7 +37,7 @@ def storeUserData(data):
     return userdata
 
 #determines, based on userdata, whether the user is signed in
-def isSignedIn():
+def isSignedOut():
     return 'userdata' not in session or session.get('userdata') == None
 
 
@@ -94,7 +94,10 @@ def displayPost(post_id):
 #----------------------------------
 @app.route('/createpost')
 def createPost():
-    return "Page to create a post"
+    if isSignedOut():
+        return redirect('/')
+    else:
+        return render_template('CreatePost.html', userdata = session.get('userdata'))
 
 @app.route('/editpost')
 def editPost():
@@ -109,14 +112,14 @@ def addPost():
 #----------------------------------
 @app.route('/signin')
 def signIn():
-    if isSignedIn():
+    if isSignedOut():
         return render_template('SignIn.html', userdata = None)
     else:
         return redirect("/")
 
 @app.route('/signout')
 def signOut():
-    if isSignedIn():
+    if isSignedOut():
         return redirect("/")
     else:
         session['userdata'] = None
@@ -124,7 +127,7 @@ def signOut():
 
 @app.route('/signup')
 def signUp():
-    if isSignedIn():
+    if isSignedOut():
         return render_template('SignUp.html', userdata = None)
     else:
         return redirect("/")
@@ -144,7 +147,7 @@ def validateUser():
 def createUser():
     conn = mysql.connect()
     cursor = conn.cursor()
-    
+
     val_name = request.form['inputName']
     val_username = request.form['inputUsername']
     val_email = request.form['inputEmail']

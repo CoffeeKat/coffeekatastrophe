@@ -1,0 +1,28 @@
+{% extends "Base.html" %}
+
+{% block title %}Create Post{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block blog %}
+<h1>Create Post</h1>
+<form action="/addpost" method="post">
+  <label for="postTitle">Name</label>
+  <br>
+  <input type="name" id="postTitle" name="postTitle" placeholder="Title" required autofocus/>
+  <br>
+  <label for="postContent">Post Content</label>
+  <br>
+  <textarea id="postContent" name="postContent" placeholder="Post Content" rows="10" cols="100">
+  </textarea>
+  <br>
+  <button type="submit">Submit</button>
+  <button type="reset">Clear</button>
+</form>
+{% endblock %}
+
+{% block body %}
+  {{ super() }}
+{% endblock %}
