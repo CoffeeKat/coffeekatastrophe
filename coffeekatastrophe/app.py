@@ -114,12 +114,37 @@ def addPost():
 
         val_postTitle = request.form['postTitle']
         val_postContent = request.form['postContent']
+        val_postTag = request.form['postTags']
 
+        #Put the post in the post table
         cursor.callproc('sp_createPost',(val_postTitle, val_postContent, session['userdata']['userkey'],))
         data = cursor.fetchall()
         print(data)
         if len(data) is 0:
             conn.commit()
+
+        #Put any new tags in the tags TABLE
+        cursor.callproc('sp_createTag',(val_postTag,))
+        data = cursor.fetchall()
+        print(data)
+        if len(data) is 0:
+            conn.commit()
+
+        #Put the Tag-Post relations in the relations table
+        #Get tag ID
+        cursor.callproc('sp_gettagid', (val_postTag,))
+        data = cursor.fetchall()
+        val_tag_id = data[0][0]
+        #Get newest post ID
+        cursor.callproc('sp_getnewestpostid')
+        data = cursor.fetchall()
+        val_post_id = data[0][0]
+        #Create the relation entry
+        cursor.callproc('sp_createPostTagRelation', (val_tag_id, val_post_id,))
+        data = cursor.fetchall()
+        if len(data) is 0:
+            conn.commit()
+
         return redirect("/")
 
 #----------------------------------
