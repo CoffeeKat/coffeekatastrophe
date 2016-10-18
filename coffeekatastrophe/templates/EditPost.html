@@ -1,0 +1,27 @@
+{% extends "Base.html" %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block blog %}
+  <form action="/addeditedpost/{{post[0][0]}}" method="post">
+    <label for="postTitle">Name</label>
+    <br>
+    <input type="name" id="postTitle" name="postTitle" value="{{ post[0][1] }}" required>
+    <br>
+    <label for="postContent">Post Content</label>
+    <br>
+    <textarea id="postContent" name="postContent" placeholder="Post Content" rows="10" cols="100">
+      {{ post[0][2] }}
+    </textarea>
+    <br>
+    <button action="submit">Save</button>
+  </form>
+{% endblock %}
+
+{% block body %}
+  {{ super() }}
+{% endblock %}

@@ -7,11 +7,11 @@
 {% endblock %}
 
 {% block blog %}
-  <h2> Kat's Blog</h2>
+  <h2> Kat's {{ proj|capitalize }} Blog</h2>
   <tr>
     {% for post in posts %}
-      <td><h3>{{ post[1] }}</h3></td>
-      <td>{{ post[2] }}</td>
+      <td><a href="/post/{{ post[0] }}"><h3>{{ post[1] }}</h3></a></td>
+      <td>{{ post[2]|safe }}</td>
     {% endfor %}
   </tr>
 {% endblock %}

@@ -7,15 +7,17 @@
 {% endblock %}
 
 {% block blog %}
-  <h2> Kat's {{ proj|capitalize }} Project</h2>
   <tr>
-    {% for post in posts %}
-      <td><h3>{{ post[1] }}</h3></td>
-      <td>{{ post[2] }}</td>
-    {% endfor %}
+    <td><h3>{{ post[0][1] }}</h3></td>
+    <td>{{ post[0][2]|safe }}</td>
   </tr>
 {% endblock %}
 
 {% block body %}
   {{ super() }}
+  {% if userdata['isadmin'] %}
+    <form action="/editpost/{{ post[0][0]}}" method="post">
+      <button type="submit">Edit Post</button>
+    </form>
+  {% endif %}
 {% endblock %}

@@ -63,8 +63,7 @@ def main():
     cursor = conn.cursor()
     cursor.callproc('sp_getposts',('%',0, 10,))
     data = cursor.fetchall()
-    print(data)
-    return render_template('Blog.html', userdata = session.get('userdata'), posts = data)
+    return render_template('Blog.html', userdata = session.get('userdata'), posts = data, proj = 'Projects')
 
 ################################################################
 # proj_blog
@@ -86,8 +85,7 @@ def proj_blog(proj, page_number = 0):
         cursor = conn.cursor()
         cursor.callproc('sp_getposts',(proj,0, 10,))
         data = cursor.fetchall()
-        print(data)
-        return render_template('Post.html', userdata = session.get('userdata'), posts = data, proj = proj)
+        return render_template('Blog.html', userdata = session.get('userdata'), posts = data, proj = proj)
 
 
 ################################################################
@@ -101,7 +99,11 @@ def proj_blog(proj, page_number = 0):
 ################################################################
 @app.route('/post/<int:post_id>')
 def displayPost(post_id):
-    return render_template('Post.html', postdata=post)
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.callproc('sp_getpostbyid',(post_id,))
+    data = cursor.fetchall()
+    return render_template('Post.html', userdata = session.get('userdata'), post=data)
 
 #----------------------------------
 #Post manipulation routes go here
@@ -113,9 +115,35 @@ def createPost():
     else:
         return render_template('CreatePost.html', userdata = session.get('userdata'))
 
-@app.route('/editpost')
-def editPost():
-    return "Page to edit a post"
+@app.route('/editpost/<int:post_id>', methods = ['POST'])
+def editPost(post_id):
+    if isSignedOut():
+        return redirect('/')
+    else:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.callproc('sp_getpostbyid',(post_id,))
+        data = cursor.fetchall()
+        return render_template('EditPost.html', userdata = session.get('userdata'), post=data)
+
+@app.route('/addeditedpost/<int:post_id>', methods = ['POST'])
+def addEditedPost(post_id):
+    if isSignedOut():
+        return redirect('/')
+    else:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+
+        val_postTitle = request.form['postTitle']
+        val_postContent = request.form['postContent']
+
+        #Put the post in the post table
+        cursor.callproc('sp_createEditedPost',(post_id, val_postTitle, val_postContent, session['userdata']['userkey'],))
+        data = cursor.fetchall()
+        print(data)
+        if len(data) is 0:
+            conn.commit()
+        return redirect('/post/' + str(post_id))
 
 @app.route('/addpost', methods = ['POST'])
 def addPost():
